@@ -1,0 +1,77 @@
+﻿@page "/AddScore"
+@using Domain
+@using Client.HttpClientServices.ClientInterface
+@inject IPlayerHttpServices PlayerHttpServices
+<h3>AddScore</h3>
+<div class="form-group filed">
+    <label>Hole Id:</label>
+    <input type="text" @bind="holeId" maxlength="4" @bind:event="oninput">
+    </div>
+<div class="form-group filed">
+    <label>Player:</label>
+    <select @bind="selctedPlayerId">
+        <option>choose</option>
+        @foreach (var item in listOfPlayers)
+        {
+            <option value="@item.PlayerId">@item.Name</option>
+        }
+    </select>
+</div>
+<div class="form-group filed">
+    <label>NumOfStrikes:</label>
+    <select @bind="selctedNumOfStrikes">
+        <option>choose</option>
+        @foreach (var item in listOfNumOfStrikes)
+        {
+            <option value="@item">@item</option>
+        }
+    </select>
+</div>
+
+@if (!string.IsNullOrEmpty(resultMsg))
+{
+    <label style="color: @color">@resultMsg</label>
+}
+<div class="button-row">
+    <button @onclick="Create" class="btn-online-primary">Create</button>
+</div>
+@code {
+    private int holeId;
+
+    private ICollection<Player> listOfPlayers = new List<Player>();
+
+    private readonly ICollection<int> listOfNumOfStrikes = new List<int>(){ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    private int? selctedPlayerId;
+    private int? selctedNumOfStrikes;
+    private string resultMsg = "";
+    private string color = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        listOfPlayers = await PlayerHttpServices.GetAllAsync();
+    }
+
+    private async Task Create()
+    {
+        try
+        {
+
+            HoleScore holeScore = new HoleScore()
+            {
+                HoleId = holeId,
+                NumOfStrikes = (int)selctedNumOfStrikes!
+
+            };
+            await PlayerHttpServices.AddScoreToPlayerAsync(holeScore, (int)selctedPlayerId!);
+            resultMsg = "Grade Added";
+            color = "Green";
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            color = "red";
+            Console.WriteLine(e.Message);
+        }
+    }
+
+}

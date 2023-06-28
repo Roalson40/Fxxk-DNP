@@ -1,0 +1,76 @@
+﻿@page "/AddPlayer"
+@using Domain
+@using Client.HttpClientServices.ClientInterface
+@inject IPlayerHttpServices PlayerHttpServices
+<div class="card">
+<h3>CreateStudent</h3>
+    <div class="form-group filed">
+        <label>Player name:</label>
+        <input type="text" @bind="name" @bind:event="oninput">
+    </div>
+    <div class="form-group filed">
+        <label>Age:</label>
+        <input type="text" @bind="age" @bind:event="oninput">
+    </div>
+    <div class="form-group filed">
+        <label>Phone:</label>
+        <input type="text" @bind="phone" @bind:event="oninput">
+    </div>
+    <div class="form-group filed">
+        <label>MembershipFee:</label>
+        <input type="text" @bind="membershipFee" @bind:event="oninput">
+    </div>
+    <div class="form-group filed">
+             <label>MembershipType:</label>
+                <input type="text" @bind="membershipType" @bind:event="oninput">
+                </div>
+    @if (!string.IsNullOrEmpty(resultMsg))
+    {
+        <label style="color: @color">@resultMsg</label>
+    }
+</div>
+<div class="button-row">
+    <button @onclick="Create" class="acceptbtn">Create</button>
+</div>
+
+@code {
+    private string name;
+
+    private int age;
+
+    private string? phone;
+
+    private double membershipFee;
+
+    private string membershipType;
+    
+    private string resultMsg;
+
+    private string color;
+
+    private async Task Create()
+    {
+        resultMsg = "";
+        
+        Console.WriteLine("111");
+        Player player = new Player(name, age, phone, membershipFee, membershipType);
+        Console.WriteLine("1.1");
+
+        Player createdPlayer = await PlayerHttpServices.CreateAsync(player);
+            
+
+        name = "";
+        Console.WriteLine("1.3");
+        
+        Console.WriteLine("1.4");
+
+        phone = "";
+        
+        membershipType = "";
+        resultMsg = "Player successfully created";
+        Console.WriteLine("1.5");
+
+        color = "green";
+        Console.WriteLine("333");
+    }
+}

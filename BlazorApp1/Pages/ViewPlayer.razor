@@ -1,0 +1,54 @@
+﻿@page "/ViewPlayer"
+@using Domain
+@using Client.HttpClientServices.ClientInterface
+@inject IPlayerHttpServices PlayerHttpServices
+
+<h3 style="text-align: center">Overview of all players</h3>
+@if (!string.IsNullOrEmpty(msg))
+{
+    <div>
+        <span>@msg</span>
+    </div>
+}
+
+@if (players == null)
+{
+    <span> Loading... </span>
+}
+else if (!players.Any())
+{
+    <span>No students to be found</span>
+}
+else
+{
+    <div class="student-contains">
+    @foreach (Player player in players)
+    {
+        <div class="student-card">
+            <label>@player.Name</label>
+        </div>
+    }
+    </div>
+}
+
+@code {
+    private ICollection<Player> players;
+
+    private string msg;
+
+    protected override async Task OnInitializedAsync()
+    {
+        msg = "";
+
+        try
+        {
+
+            players = await PlayerHttpServices.GetAllAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+}
